@@ -9,8 +9,12 @@ function App() {
   // State
   const [weather,setWeather] = useState([])
   const APIKEY = '68cbbcfd4f4006288245f3c27562c5b0';
-  // let today = new Date(),
-  //   date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  let today = new Date(),
+      date = days[today.getDay()] + ', ' + months[today.getMonth()] + ' ' + today.getDate() + ', ' + today.getFullYear() ;
+
   async function fetchData(e) {
     const city = e.target.elements.city.value
     const country = e.target.elements.country.value
@@ -21,13 +25,13 @@ function App() {
       if(city && country) {
         setWeather({
           data: apiData,
-          date:apiData.timezone,
+          date:date,
           city: apiData.name,
           humidity: apiData.main.humidity,
           sunrise: apiData.sys.sunrise,
           sunset: apiData.sys.sunset,
           description: apiData.weather[0].description,
-          temperature: (Math.round(apiData.main.temp * 9/5 - 459.67) - 32) * 5 / 9,
+          temperature: Math.round((apiData.main.temp * 9/5 - 459.67) - 32) * 5 / 9,
           error:""
         }
         )} else {
@@ -42,6 +46,16 @@ function App() {
         )}
   }
 
+  function sunriseSunset(timeStamp) {
+    let formattedTime;
+    let dates = new Date(timeStamp * 1000);
+    let hours = dates.getHours();
+    let minutes = '0' + dates.getMinutes();
+    let seconds = '0' + dates.getSeconds();
+    // Will display time in 10:30:23 format
+    return formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+  }
+  
   return (
     <div className="App">
       <ul>
@@ -51,8 +65,8 @@ function App() {
           date = {weather.date}
           city={weather.city}
           humidity={weather.humidity}
-          sunrise={weather.sunrise}
-          sunset={weather.sunset}
+          sunrise={sunriseSunset(weather.sunrise)}
+          sunset={sunriseSunset(weather.sunset)}
           description={weather.description}
           temperature={weather.temperature}
           error={weather.error}
